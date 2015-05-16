@@ -1,22 +1,22 @@
-package main
+package ast
 
 type Expression interface{}
 
 type Token struct {
-	token   int
-	literal string
+	Token   int
+	Literal string
 }
 
 type NumExpr struct {
-	literal string
+	Literal string
 }
 
 type IdenExpr struct {
-	literal string
+	Literal string
 }
 
 type BinOpExpr struct {
-	left  Expression
-	op    rune
-	right Expression
+	Left  Expression
+	Op    rune
+	Right Expression
 }

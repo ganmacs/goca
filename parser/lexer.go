@@ -1,12 +1,13 @@
-package main
+package parser
 
 import (
+	"github.com/ganmacs/goca/ast"
 	"text/scanner"
 )
 
 type Lexer struct {
 	scanner.Scanner
-	result Expression
+	result ast.Expression
 }
 
 func (l *Lexer) Lex(lval *yySymType) int {
@@ -17,10 +18,15 @@ func (l *Lexer) Lex(lval *yySymType) int {
 	if token == scanner.Ident {
 		token = IDENT
 	}
-	lval.token = Token{token: token, literal: l.TokenText()}
+	lval.token = ast.Token{Token: token, Literal: l.TokenText()}
 	return token
 }
 
 func (l *Lexer) Error(e string) {
 	panic(e)
+}
+
+func Parse(l *Lexer) ast.Expression {
+	yyParse(l)
+	return l.result
 }

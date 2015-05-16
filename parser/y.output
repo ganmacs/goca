@@ -20,7 +20,7 @@ state 1
 state 2
 	program:  stmnt.    (1)
 
-	.  reduce 1 (src line 22)
+	.  reduce 1 (src line 25)
 
 
 state 3
@@ -34,7 +34,7 @@ state 3
 	'-'  shift 7
 	'*'  shift 8
 	'/'  shift 9
-	.  reduce 2 (src line 27)
+	.  reduce 2 (src line 30)
 
 
 state 4
@@ -42,13 +42,13 @@ state 4
 	expr:  IDENT.    (5)
 
 	'='  shift 10
-	.  reduce 5 (src line 37)
+	.  reduce 5 (src line 40)
 
 
 state 5
 	expr:  NUMBER.    (4)
 
-	.  reduce 4 (src line 33)
+	.  reduce 4 (src line 36)
 
 
 state 6
@@ -105,13 +105,13 @@ state 11
 
 	'*'  shift 8
 	'/'  shift 9
-	.  reduce 6 (src line 40)
+	.  reduce 6 (src line 43)
 
 
 state 12
 	expr:  IDENT.    (5)
 
-	.  reduce 5 (src line 37)
+	.  reduce 5 (src line 40)
 
 
 state 13
@@ -123,7 +123,7 @@ state 13
 
 	'*'  shift 8
 	'/'  shift 9
-	.  reduce 7 (src line 43)
+	.  reduce 7 (src line 46)
 
 
 state 14
@@ -133,7 +133,7 @@ state 14
 	expr:  expr '*' expr.    (8)
 	expr:  expr.'/' expr 
 
-	.  reduce 8 (src line 46)
+	.  reduce 8 (src line 49)
 
 
 state 15
@@ -143,7 +143,7 @@ state 15
 	expr:  expr.'/' expr 
 	expr:  expr '/' expr.    (9)
 
-	.  reduce 9 (src line 49)
+	.  reduce 9 (src line 52)
 
 
 state 16
@@ -157,7 +157,7 @@ state 16
 	'-'  shift 7
 	'*'  shift 8
 	'/'  shift 9
-	.  reduce 3 (src line 29)
+	.  reduce 3 (src line 32)
 
 
 10 terminals, 4 nonterminals
