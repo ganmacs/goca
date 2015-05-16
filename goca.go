@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/ganmacs/goca/parser"
+	"github.com/ganmacs/goca/vm"
 	"os"
 	"strings"
 )
@@ -10,6 +11,13 @@ import (
 func main() {
 	l := new(parser.Lexer)
 	l.Init(strings.NewReader(os.Args[1]))
-	ret := parser.Parse(l)
-	fmt.Printf("%#v\n", ret)
+	expr := parser.Parse(l)
+
+	env := vm.NewEnv()
+	ret, err := vm.Run(expr, env)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(ret.Int())
 }
