@@ -26,7 +26,7 @@ func Run(expr ast.Expression, e *Env) (reflect.Value, error) {
 
 		switch expr.Op {
 		case '=':
-			fmt.Println("=")
+			rv = reflect.ValueOf(right.Int())
 		case '+':
 			rv = reflect.ValueOf(left.Int() + right.Int())
 		case '-':
