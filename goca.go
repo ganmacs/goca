@@ -1,7 +1,6 @@
 package main
 
 import (
-	// "fmt"
 	"github.com/ganmacs/goca/parser"
 	"github.com/ganmacs/goca/vm"
 	"os"
@@ -15,9 +14,4 @@ func main() {
 
 	env := vm.NewEnv()
 	vm.Run(exprs, env)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	panic(err)
-	// }
-	// fmt.Println(ret)
 }

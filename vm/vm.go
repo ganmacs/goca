@@ -23,6 +23,7 @@ func Run(exprs []ast.Expression, e *Env) {
 
 func runSingleExpr(expr ast.Expression, e *Env) (reflect.Value, error) {
 	rv := NilValue
+	var err error
 
 	switch expr := expr.(type) {
 	case ast.BinOpExpr:
@@ -38,8 +39,7 @@ func runSingleExpr(expr ast.Expression, e *Env) (reflect.Value, error) {
 		}
 		rv = reflect.ValueOf(i)
 	case ast.IdenExpr:
-		_rv, err := e.Get(expr.Literal)
-		rv = _rv
+		rv, err = e.Get(expr.Literal)
 		if err != nil {
 			fmt.Printf("Not found such keyword %s", rv)
 		}
@@ -82,9 +82,6 @@ func computeValue(expr ast.BinOpExpr, e *Env) reflect.Value {
 }
 
 func assignValue(expr ast.BinOpExpr, e *Env) reflect.Value {
-	// rv := NilValue
-	// rv = reflect.ValueOf(right)
-
 	right, err := runSingleExpr(expr.Right, e)
 	if err != nil {
 		panic(err)
