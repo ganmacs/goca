@@ -6,14 +6,15 @@ import (
 )
 %}
 
-%type<stmtns> stmnts
-%type<expr> stmnt
+%type<stmnts> stmnts
+%type<stmnt> stmnt
 %type<expr> expr
 
 %union{
 	token ast.Token
-	expr ast.Expression
-	stmtns []ast.Expression
+	stmnts []ast.Stmnt
+	stmnt ast.Stmnt
+	expr ast.Expr
 }
 
 %token<token> IDENT NUMBER
@@ -23,7 +24,8 @@ import (
 %right '='
 %%
 
-stmnts : {
+stmnts
+  : {                           // empty
     $$ = nil
 		if l, ok := yylex.(*Lexer); ok {
       l.stmnts = $$
@@ -31,7 +33,7 @@ stmnts : {
   }
   | stmnt stmnts
   {
-    $$ = append([]ast.Expression{$1}, $2...)
+    $$ = append([]ast.Stmnt{$1}, $2...)
 		if l, ok := yylex.(*Lexer); ok {
       l.stmnts = $$
 		}
@@ -39,30 +41,29 @@ stmnts : {
 
 stmnt
   : expr ';' {
-      $$ = $1
+      $$ = ast.NewStmntByExpr($1)
   }
   | IDENT '=' expr ';' {
-      ident := ast.IdenExpr{Literal: $1.Literal}
-      $$ = ast.BinOpExpr{Left: ident, Op: '=', Right: $3}
+      var ident ast.Expr = &ast.IdenExpr{Literal: $1.Literal}
+      $$ = ast.NewStmntByExpr(&ast.BinOpExpr{Left: ident, Op: '=', Right: $3})
   }
-
 expr
   : NUMBER {
-      $$ = ast.NumExpr{Literal: $1.Literal}
+      $$ = &ast.NumExpr{Literal: $1.Literal}
   }
   | IDENT {
-      $$ = ast.IdenExpr{Literal: $1.Literal}
+      $$ = &ast.IdenExpr{Literal: $1.Literal}
   }
   | expr '+' expr {
-      $$ = ast.BinOpExpr{Left: $1, Op: '+',  Right: $3}
+      $$ = &ast.BinOpExpr{Left: $1, Op: '+',  Right: $3}
     }
   | expr '-' expr {
-      $$ = ast.BinOpExpr{Left: $1, Op: '-',  Right: $3}
+      $$ = &ast.BinOpExpr{Left: $1, Op: '-',  Right: $3}
     }
   | expr '*' expr {
-      $$ = ast.BinOpExpr{Left: $1, Op: '*',  Right: $3}
+      $$ = &ast.BinOpExpr{Left: $1, Op: '*',  Right: $3}
     }
   | expr '/' expr {
-      $$ = ast.BinOpExpr{Left: $1, Op: '/',  Right: $3}
+      $$ = &ast.BinOpExpr{Left: $1, Op: '/',  Right: $3}
     }
 %%

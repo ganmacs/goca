@@ -9,10 +9,9 @@ import (
 
 var NilValue = reflect.ValueOf((interface{})(nil))
 
-func Run(exprs []ast.Expression, e *Env) {
-	for _, expr := range exprs {
-
-		v, err := runSingleExpr(expr, e)
+func Run(stmnts []ast.Stmnt, e *Env) {
+	for _, stmns := range stmnts {
+		v, err := runSingleStmnt(stmns, e)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -21,32 +20,38 @@ func Run(exprs []ast.Expression, e *Env) {
 	}
 }
 
-func runSingleExpr(expr ast.Expression, e *Env) (reflect.Value, error) {
+func runSingleStmnt(stmnt ast.Stmnt, e *Env) (reflect.Value, error) {
+	rv := NilValue
+	rv, err := invokeExpr(stmnt.(*ast.StmntImpl).Expr, e)
+	if err != nil {
+		fmt.Println("error")
+	}
+	return rv, nil
+}
+
+func invokeExpr(expr ast.Expr, env *Env) (reflect.Value, error) {
 	rv := NilValue
 	var err error
 
-	switch expr := expr.(type) {
-	case ast.BinOpExpr:
-		if expr.Op == '=' {
-			rv = assignValue(expr, e)
+	switch e := expr.(type) {
+	case *ast.BinOpExpr:
+		if e.Op == '=' {
+			rv = assignValue(*e, env)
 		} else {
-			rv = computeValue(expr, e)
+			rv = computeValue(*e, env)
 		}
-	case ast.NumExpr:
-		i, err := toInt(expr)
+	case *ast.NumExpr:
+		i, err := toInt(*e)
 		if err != nil {
 			panic(err)
 		}
 		rv = reflect.ValueOf(i)
-	case ast.IdenExpr:
-		rv, err = e.Get(expr.Literal)
+	case *ast.IdenExpr:
+		rv, err = env.Get(e.Literal)
 		if err != nil {
 			fmt.Printf("Not found such keyword %s", rv)
 		}
-	default:
-		fmt.Println("error")
 	}
-
 	return rv, nil
 }
 
@@ -57,12 +62,12 @@ func toInt(i ast.NumExpr) (int64, error) {
 func computeValue(expr ast.BinOpExpr, e *Env) reflect.Value {
 	rv := NilValue
 
-	left, err := runSingleExpr(expr.Left, e)
+	left, err := invokeExpr(expr.Left, e)
 	if err != nil {
 		panic(err)
 	}
 
-	right, err := runSingleExpr(expr.Right, e)
+	right, err := invokeExpr(expr.Right, e)
 	if err != nil {
 		panic(err)
 	}
@@ -82,11 +87,11 @@ func computeValue(expr ast.BinOpExpr, e *Env) reflect.Value {
 }
 
 func assignValue(expr ast.BinOpExpr, e *Env) reflect.Value {
-	right, err := runSingleExpr(expr.Right, e)
+	right, err := invokeExpr(expr.Right, e)
 	if err != nil {
 		panic(err)
 	}
 
-	e.Set(expr.Left.(ast.IdenExpr).Literal, right)
+	e.Set(expr.Left.(*ast.IdenExpr).Literal, right)
 	return right
 }

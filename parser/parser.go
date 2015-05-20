@@ -12,8 +12,9 @@ import (
 type yySymType struct {
 	yys    int
 	token  ast.Token
-	expr   ast.Expression
-	stmtns []ast.Expression
+	stmnts []ast.Stmnt
+	stmnt  ast.Stmnt
+	expr   ast.Expr
 }
 
 const IDENT = 57346
@@ -34,7 +35,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyMaxDepth = 200
 
-//line parser.go.y:68
+//line parser.go.y:69
 
 //line yacctab:1
 var yyExca = []int{
@@ -330,61 +331,61 @@ yydefault:
 	switch yynt {
 
 	case 1:
-		//line parser.go.y:26
-		{
-			yyVAL.stmtns = nil
+		//line parser.go.y:28
+		{ // empty
+			yyVAL.stmnts = nil
 			if l, ok := yylex.(*Lexer); ok {
-				l.stmnts = yyVAL.stmtns
+				l.stmnts = yyVAL.stmnts
 			}
 		}
 	case 2:
-		//line parser.go.y:33
+		//line parser.go.y:35
 		{
-			yyVAL.stmtns = append([]ast.Expression{yyS[yypt-1].expr}, yyS[yypt-0].stmtns...)
+			yyVAL.stmnts = append([]ast.Stmnt{yyS[yypt-1].stmnt}, yyS[yypt-0].stmnts...)
 			if l, ok := yylex.(*Lexer); ok {
-				l.stmnts = yyVAL.stmtns
+				l.stmnts = yyVAL.stmnts
 			}
 		}
 	case 3:
-		//line parser.go.y:41
+		//line parser.go.y:43
 		{
-			yyVAL.expr = yyS[yypt-1].expr
+			yyVAL.stmnt = ast.NewStmntByExpr(yyS[yypt-1].expr)
 		}
 	case 4:
-		//line parser.go.y:44
+		//line parser.go.y:46
 		{
-			ident := ast.IdenExpr{Literal: yyS[yypt-3].token.Literal}
-			yyVAL.expr = ast.BinOpExpr{Left: ident, Op: '=', Right: yyS[yypt-1].expr}
+			var ident ast.Expr = &ast.IdenExpr{Literal: yyS[yypt-3].token.Literal}
+			yyVAL.stmnt = ast.NewStmntByExpr(&ast.BinOpExpr{Left: ident, Op: '=', Right: yyS[yypt-1].expr})
 		}
 	case 5:
-		//line parser.go.y:50
+		//line parser.go.y:51
 		{
-			yyVAL.expr = ast.NumExpr{Literal: yyS[yypt-0].token.Literal}
+			yyVAL.expr = &ast.NumExpr{Literal: yyS[yypt-0].token.Literal}
 		}
 	case 6:
-		//line parser.go.y:53
+		//line parser.go.y:54
 		{
-			yyVAL.expr = ast.IdenExpr{Literal: yyS[yypt-0].token.Literal}
+			yyVAL.expr = &ast.IdenExpr{Literal: yyS[yypt-0].token.Literal}
 		}
 	case 7:
-		//line parser.go.y:56
+		//line parser.go.y:57
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Op: '+', Right: yyS[yypt-0].expr}
+			yyVAL.expr = &ast.BinOpExpr{Left: yyS[yypt-2].expr, Op: '+', Right: yyS[yypt-0].expr}
 		}
 	case 8:
-		//line parser.go.y:59
+		//line parser.go.y:60
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Op: '-', Right: yyS[yypt-0].expr}
+			yyVAL.expr = &ast.BinOpExpr{Left: yyS[yypt-2].expr, Op: '-', Right: yyS[yypt-0].expr}
 		}
 	case 9:
-		//line parser.go.y:62
+		//line parser.go.y:63
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Op: '*', Right: yyS[yypt-0].expr}
+			yyVAL.expr = &ast.BinOpExpr{Left: yyS[yypt-2].expr, Op: '*', Right: yyS[yypt-0].expr}
 		}
 	case 10:
-		//line parser.go.y:65
+		//line parser.go.y:66
 		{
-			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Op: '/', Right: yyS[yypt-0].expr}
+			yyVAL.expr = &ast.BinOpExpr{Left: yyS[yypt-2].expr, Op: '/', Right: yyS[yypt-0].expr}
 		}
 	}
 	goto yystack /* stack new state and value */
