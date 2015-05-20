@@ -7,7 +7,7 @@ import (
 
 type Lexer struct {
 	scanner.Scanner
-	result []ast.Expression
+	stmnts []ast.Expression
 }
 
 func (l *Lexer) Lex(lval *yySymType) int {
@@ -28,5 +28,5 @@ func (l *Lexer) Error(e string) {
 
 func Parse(l *Lexer) []ast.Expression {
 	yyParse(l)
-	return l.result
+	return l.stmnts
 }

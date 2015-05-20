@@ -334,7 +334,7 @@ yydefault:
 		{
 			yyVAL.stmtns = nil
 			if l, ok := yylex.(*Lexer); ok {
-				l.result = yyVAL.stmtns
+				l.stmnts = yyVAL.stmtns
 			}
 		}
 	case 2:
@@ -342,7 +342,7 @@ yydefault:
 		{
 			yyVAL.stmtns = append([]ast.Expression{yyS[yypt-1].expr}, yyS[yypt-0].stmtns...)
 			if l, ok := yylex.(*Lexer); ok {
-				l.result = yyVAL.stmtns
+				l.stmnts = yyVAL.stmtns
 			}
 		}
 	case 3:

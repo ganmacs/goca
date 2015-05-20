@@ -26,14 +26,14 @@ import (
 stmnts : {
     $$ = nil
 		if l, ok := yylex.(*Lexer); ok {
-      l.result = $$
+      l.stmnts = $$
 		}
   }
   | stmnt stmnts
   {
     $$ = append([]ast.Expression{$1}, $2...)
 		if l, ok := yylex.(*Lexer); ok {
-      l.result = $$
+      l.stmnts = $$
 		}
   }
 
