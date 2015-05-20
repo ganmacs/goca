@@ -10,9 +10,10 @@ import (
 
 //line parser.go.y:13
 type yySymType struct {
-	yys   int
-	token ast.Token
-	expr  ast.Expression
+	yys    int
+	token  ast.Token
+	expr   ast.Expression
+	stmtns []ast.Expression
 }
 
 const IDENT = 57346
@@ -33,7 +34,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyMaxDepth = 200
 
-//line parser.go.y:55
+//line parser.go.y:68
 
 //line yacctab:1
 var yyExca = []int{
@@ -42,45 +43,48 @@ var yyExca = []int{
 	-2, 0,
 }
 
-const yyNprod = 10
+const yyNprod = 11
 const yyPrivate = 57344
 
 var yyTokenNames []string
 var yyStates []string
 
-const yyLast = 19
+const yyLast = 29
 
 var yyAct = []int{
 
-	3, 6, 7, 8, 9, 8, 9, 11, 13, 14,
-	15, 16, 10, 12, 5, 4, 5, 2, 1,
+	3, 8, 9, 10, 11, 2, 19, 10, 11, 13,
+	15, 16, 17, 18, 8, 9, 10, 11, 0, 7,
+	12, 14, 5, 4, 5, 1, 0, 0, 6,
 }
 var yyPact = []int{
 
-	11, -1000, -1000, -5, 2, -1000, 9, 9, 9, 9,
-	9, -3, -1000, -3, -1000, -1000, -5,
+	19, -1000, 19, 8, 10, -1000, -1000, -1000, 17, 17,
+	17, 17, 17, -1, -1000, -1, -1000, -1000, -5, -1000,
 }
 var yyPgo = []int{
 
-	0, 18, 0, 17,
+	0, 25, 5, 0,
 }
 var yyR1 = []int{
 
-	0, 1, 3, 3, 2, 2, 2, 2, 2, 2,
+	0, 1, 1, 2, 2, 3, 3, 3, 3, 3,
+	3,
 }
 var yyR2 = []int{
 
-	0, 1, 1, 3, 1, 1, 3, 3, 3, 3,
+	0, 0, 2, 2, 4, 1, 1, 3, 3, 3,
+	3,
 }
 var yyChk = []int{
 
-	-1000, -1, -3, -2, 4, 5, 6, 7, 8, 9,
-	10, -2, 4, -2, -2, -2, -2,
+	-1000, -1, -2, -3, 4, 5, -1, 11, 6, 7,
+	8, 9, 10, -3, 4, -3, -3, -3, -3, 11,
 }
 var yyDef = []int{
 
-	0, -2, 1, 2, 5, 4, 0, 0, 0, 0,
-	0, 6, 5, 7, 8, 9, 3,
+	1, -2, 1, 0, 6, 5, 2, 3, 0, 0,
+	0, 0, 0, 7, 6, 8, 9, 10, 0, 4,
 }
 var yyTok1 = []int{
 
@@ -89,7 +93,7 @@ var yyTok1 = []int{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 8, 6, 3, 7, 3, 9, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 11,
 	3, 10,
 }
 var yyTok2 = []int{
@@ -328,44 +332,57 @@ yydefault:
 	case 1:
 		//line parser.go.y:26
 		{
-			yyVAL.expr = yyS[yypt-0].expr
-			yylex.(*Lexer).result = yyVAL.expr
+			yyVAL.stmtns = nil
+			if l, ok := yylex.(*Lexer); ok {
+				l.result = yyVAL.stmtns
+			}
 		}
 	case 2:
-		yyVAL.expr = yyS[yypt-0].expr
-	case 3:
-		//line parser.go.y:32
+		//line parser.go.y:33
 		{
-			ident := ast.IdenExpr{Literal: yyS[yypt-2].token.Literal}
-			yyVAL.expr = ast.BinOpExpr{Left: ident, Op: '=', Right: yyS[yypt-0].expr}
+			yyVAL.stmtns = append([]ast.Expression{yyS[yypt-1].expr}, yyS[yypt-0].stmtns...)
+			if l, ok := yylex.(*Lexer); ok {
+				l.result = yyVAL.stmtns
+			}
+		}
+	case 3:
+		//line parser.go.y:41
+		{
+			yyVAL.expr = yyS[yypt-1].expr
 		}
 	case 4:
-		//line parser.go.y:37
+		//line parser.go.y:44
+		{
+			ident := ast.IdenExpr{Literal: yyS[yypt-3].token.Literal}
+			yyVAL.expr = ast.BinOpExpr{Left: ident, Op: '=', Right: yyS[yypt-1].expr}
+		}
+	case 5:
+		//line parser.go.y:50
 		{
 			yyVAL.expr = ast.NumExpr{Literal: yyS[yypt-0].token.Literal}
 		}
-	case 5:
-		//line parser.go.y:40
+	case 6:
+		//line parser.go.y:53
 		{
 			yyVAL.expr = ast.IdenExpr{Literal: yyS[yypt-0].token.Literal}
 		}
-	case 6:
-		//line parser.go.y:43
+	case 7:
+		//line parser.go.y:56
 		{
 			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Op: '+', Right: yyS[yypt-0].expr}
 		}
-	case 7:
-		//line parser.go.y:46
+	case 8:
+		//line parser.go.y:59
 		{
 			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Op: '-', Right: yyS[yypt-0].expr}
 		}
-	case 8:
-		//line parser.go.y:49
+	case 9:
+		//line parser.go.y:62
 		{
 			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Op: '*', Right: yyS[yypt-0].expr}
 		}
-	case 9:
-		//line parser.go.y:52
+	case 10:
+		//line parser.go.y:65
 		{
 			yyVAL.expr = ast.BinOpExpr{Left: yyS[yypt-2].expr, Op: '/', Right: yyS[yypt-0].expr}
 		}

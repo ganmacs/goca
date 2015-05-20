@@ -1,174 +1,201 @@
 
 state 0
-	$accept: .program $end 
+	$accept: .stmnts $end 
+	stmnts: .    (1)
 
 	IDENT  shift 4
 	NUMBER  shift 5
-	.  error
+	.  reduce 1 (src line 26)
 
-	program  goto 1
-	expr  goto 3
+	stmnts  goto 1
 	stmnt  goto 2
+	expr  goto 3
 
 state 1
-	$accept:  program.$end 
+	$accept:  stmnts.$end 
 
 	$end  accept
 	.  error
 
 
 state 2
-	program:  stmnt.    (1)
+	stmnts:  stmnt.stmnts 
+	stmnts: .    (1)
 
-	.  reduce 1 (src line 25)
+	IDENT  shift 4
+	NUMBER  shift 5
+	.  reduce 1 (src line 26)
 
+	stmnts  goto 6
+	stmnt  goto 2
+	expr  goto 3
 
 state 3
-	stmnt:  expr.    (2)
+	stmnt:  expr.';' 
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
 
-	'+'  shift 6
-	'-'  shift 7
-	'*'  shift 8
-	'/'  shift 9
-	.  reduce 2 (src line 30)
+	'+'  shift 8
+	'-'  shift 9
+	'*'  shift 10
+	'/'  shift 11
+	';'  shift 7
+	.  error
 
 
 state 4
-	stmnt:  IDENT.'=' expr 
-	expr:  IDENT.    (5)
+	stmnt:  IDENT.'=' expr ';' 
+	expr:  IDENT.    (6)
 
-	'='  shift 10
-	.  reduce 5 (src line 40)
+	'='  shift 12
+	.  reduce 6 (src line 53)
 
 
 state 5
-	expr:  NUMBER.    (4)
+	expr:  NUMBER.    (5)
 
-	.  reduce 4 (src line 36)
+	.  reduce 5 (src line 49)
 
 
 state 6
-	expr:  expr '+'.expr 
+	stmnts:  stmnt stmnts.    (2)
 
-	IDENT  shift 12
-	NUMBER  shift 5
-	.  error
+	.  reduce 2 (src line 32)
 
-	expr  goto 11
 
 state 7
-	expr:  expr '-'.expr 
+	stmnt:  expr ';'.    (3)
 
-	IDENT  shift 12
+	.  reduce 3 (src line 40)
+
+
+state 8
+	expr:  expr '+'.expr 
+
+	IDENT  shift 14
 	NUMBER  shift 5
 	.  error
 
 	expr  goto 13
 
-state 8
-	expr:  expr '*'.expr 
-
-	IDENT  shift 12
-	NUMBER  shift 5
-	.  error
-
-	expr  goto 14
-
 state 9
-	expr:  expr '/'.expr 
+	expr:  expr '-'.expr 
 
-	IDENT  shift 12
+	IDENT  shift 14
 	NUMBER  shift 5
 	.  error
 
 	expr  goto 15
 
 state 10
-	stmnt:  IDENT '='.expr 
+	expr:  expr '*'.expr 
 
-	IDENT  shift 12
+	IDENT  shift 14
 	NUMBER  shift 5
 	.  error
 
 	expr  goto 16
 
 state 11
-	expr:  expr.'+' expr 
-	expr:  expr '+' expr.    (6)
-	expr:  expr.'-' expr 
-	expr:  expr.'*' expr 
-	expr:  expr.'/' expr 
+	expr:  expr '/'.expr 
 
-	'*'  shift 8
-	'/'  shift 9
-	.  reduce 6 (src line 43)
+	IDENT  shift 14
+	NUMBER  shift 5
+	.  error
 
+	expr  goto 17
 
 state 12
-	expr:  IDENT.    (5)
+	stmnt:  IDENT '='.expr ';' 
 
-	.  reduce 5 (src line 40)
+	IDENT  shift 14
+	NUMBER  shift 5
+	.  error
 
+	expr  goto 18
 
 state 13
 	expr:  expr.'+' expr 
+	expr:  expr '+' expr.    (7)
 	expr:  expr.'-' expr 
-	expr:  expr '-' expr.    (7)
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
 
-	'*'  shift 8
-	'/'  shift 9
-	.  reduce 7 (src line 46)
+	'*'  shift 10
+	'/'  shift 11
+	.  reduce 7 (src line 56)
 
 
 state 14
-	expr:  expr.'+' expr 
-	expr:  expr.'-' expr 
-	expr:  expr.'*' expr 
-	expr:  expr '*' expr.    (8)
-	expr:  expr.'/' expr 
+	expr:  IDENT.    (6)
 
-	.  reduce 8 (src line 49)
+	.  reduce 6 (src line 53)
 
 
 state 15
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
+	expr:  expr '-' expr.    (8)
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
-	expr:  expr '/' expr.    (9)
 
-	.  reduce 9 (src line 52)
+	'*'  shift 10
+	'/'  shift 11
+	.  reduce 8 (src line 59)
 
 
 state 16
-	stmnt:  IDENT '=' expr.    (3)
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr '*' expr.    (9)
+	expr:  expr.'/' expr 
+
+	.  reduce 9 (src line 62)
+
+
+state 17
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr '/' expr.    (10)
+
+	.  reduce 10 (src line 65)
+
+
+state 18
+	stmnt:  IDENT '=' expr.';' 
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
 
-	'+'  shift 6
-	'-'  shift 7
-	'*'  shift 8
-	'/'  shift 9
-	.  reduce 3 (src line 32)
+	'+'  shift 8
+	'-'  shift 9
+	'*'  shift 10
+	'/'  shift 11
+	';'  shift 19
+	.  error
 
 
-10 terminals, 4 nonterminals
-10 grammar rules, 17/2000 states
+state 19
+	stmnt:  IDENT '=' expr ';'.    (4)
+
+	.  reduce 4 (src line 44)
+
+
+11 terminals, 4 nonterminals
+11 grammar rules, 20/2000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
 53 working sets used
-memory: parser 7/30000
+memory: parser 10/30000
 0 extra closures
-25 shift entries, 1 exceptions
-8 goto entries
-0 entries saved by goto default
-Optimizer space used: output 19/30000
-19 table entries, 0 zero
-maximum spread: 10, maximum offset: 10
+29 shift entries, 1 exceptions
+9 goto entries
+2 entries saved by goto default
+Optimizer space used: output 29/30000
+29 table entries, 3 zero
+maximum spread: 11, maximum offset: 12

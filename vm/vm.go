@@ -7,49 +7,89 @@ import (
 	"strconv"
 )
 
-var NilValue = reflect.ValueOf((*interface{})(nil))
+var NilValue = reflect.ValueOf((interface{})(nil))
 
-func Run(expr ast.Expression, e *Env) (reflect.Value, error) {
+func Run(exprs []ast.Expression, e *Env) {
+	for _, expr := range exprs {
+
+		v, err := runSingleExpr(expr, e)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		fmt.Println(v.Int())
+	}
+}
+
+func runSingleExpr(expr ast.Expression, e *Env) (reflect.Value, error) {
 	rv := NilValue
 
 	switch expr := expr.(type) {
 	case ast.BinOpExpr:
-		left, err := Run(expr.Left, e)
-		if err != nil {
-			panic(err)
+		if expr.Op == '=' {
+			rv = assignValue(expr, e)
+		} else {
+			rv = computeValue(expr, e)
 		}
-
-		right, err := Run(expr.Right, e)
-		if err != nil {
-			panic(err)
-		}
-
-		switch expr.Op {
-		case '=':
-			rv = reflect.ValueOf(right.Int())
-		case '+':
-			rv = reflect.ValueOf(left.Int() + right.Int())
-		case '-':
-			rv = reflect.ValueOf(left.Int() - right.Int())
-		case '/':
-			rv = reflect.ValueOf(left.Int() / right.Int())
-		case '*':
-			rv = reflect.ValueOf(left.Int() * right.Int())
-		default:
-			fmt.Println("default")
-		}
-
 	case ast.NumExpr:
-		var i int64
-		i, err := strconv.ParseInt(expr.Literal, 10, 64)
+		i, err := toInt(expr)
 		if err != nil {
 			panic(err)
 		}
 		rv = reflect.ValueOf(i)
 	case ast.IdenExpr:
-		rv = reflect.ValueOf(expr.Literal)
+		_rv, err := e.Get(expr.Literal)
+		rv = _rv
+		if err != nil {
+			fmt.Printf("Not found such keyword %s", rv)
+		}
 	default:
 		fmt.Println("error")
 	}
+
 	return rv, nil
+}
+
+func toInt(i ast.NumExpr) (int64, error) {
+	return strconv.ParseInt(i.Literal, 10, 64)
+}
+
+func computeValue(expr ast.BinOpExpr, e *Env) reflect.Value {
+	rv := NilValue
+
+	left, err := runSingleExpr(expr.Left, e)
+	if err != nil {
+		panic(err)
+	}
+
+	right, err := runSingleExpr(expr.Right, e)
+	if err != nil {
+		panic(err)
+	}
+	switch expr.Op {
+	case '+':
+		rv = reflect.ValueOf(left.Int() + right.Int())
+	case '-':
+		rv = reflect.ValueOf(left.Int() - right.Int())
+	case '/':
+		rv = reflect.ValueOf(left.Int() / right.Int())
+	case '*':
+		rv = reflect.ValueOf(left.Int() * right.Int())
+	default:
+		fmt.Println("default")
+	}
+	return rv
+}
+
+func assignValue(expr ast.BinOpExpr, e *Env) reflect.Value {
+	// rv := NilValue
+	// rv = reflect.ValueOf(right)
+
+	right, err := runSingleExpr(expr.Right, e)
+	if err != nil {
+		panic(err)
+	}
+
+	e.Set(expr.Left.(ast.IdenExpr).Literal, right)
+	return right
 }

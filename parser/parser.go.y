@@ -6,13 +6,14 @@ import (
 )
 %}
 
-%type<expr> program
-%type<expr> expr
+%type<stmtns> stmnts
 %type<expr> stmnt
+%type<expr> expr
 
 %union{
 	token ast.Token
 	expr ast.Expression
+	stmtns []ast.Expression
 }
 
 %token<token> IDENT NUMBER
@@ -22,17 +23,29 @@ import (
 %right '='
 %%
 
-program
-  : stmnt {
-      $$ = $1
-      yylex.(*Lexer).result = $$
+stmnts : {
+    $$ = nil
+		if l, ok := yylex.(*Lexer); ok {
+      l.result = $$
+		}
   }
+  | stmnt stmnts
+  {
+    $$ = append([]ast.Expression{$1}, $2...)
+		if l, ok := yylex.(*Lexer); ok {
+      l.result = $$
+		}
+  }
+
 stmnt
-  : expr
-  | IDENT '=' expr {
+  : expr ';' {
+      $$ = $1
+  }
+  | IDENT '=' expr ';' {
       ident := ast.IdenExpr{Literal: $1.Literal}
       $$ = ast.BinOpExpr{Left: ident, Op: '=', Right: $3}
   }
+
 expr
   : NUMBER {
       $$ = ast.NumExpr{Literal: $1.Literal}
